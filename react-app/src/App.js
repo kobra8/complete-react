@@ -8,16 +8,15 @@ class App extends Component {
       { name: 'Max', age: 28 },
       { name: 'Manu', age: 29 },
       { name: 'Stephanie', age: 26 },
-    ]
+    ],
+    showPersons: false
   }
 
-  switchNameHandler = (newName) => {
+  deletePersonHandler = (personIndex) => {
+    const persons = [...this.state.persons];
+    persons.splice(personIndex, 1);
     this.setState({
-      persons: [
-        { name: newName, age: 28 },
-        { name: 'Manu', age: 29 },
-        { name: 'Stephanie', age: 29 }
-      ]
+      persons
     })
   }
 
@@ -31,6 +30,13 @@ class App extends Component {
     })
   }
 
+  togglePersonsHandler = () => {
+    const doesShow = this.state.showPersons;
+    this.setState({
+      showPersons: !doesShow
+    }) 
+  }
+
   render() {
     const btnStyle = {
       backgroundColor: 'white',
@@ -40,21 +46,28 @@ class App extends Component {
       cursor: 'pointer',
       borderRadius: '3px'
     }
+    // Warunkowe ustawianie zawrtości zmiennej persons do wyświetlania
+    let persons = null;
+    if(this.state.showPersons) {
+      persons = (
+        <div>
+          {this.state.persons.map((x,i) => {
+            return <Person
+            key={i}
+            click={() => this.deletePersonHandler(i)}
+            name={x.name} 
+            age={x.age}/>
+          })}
+      </div> 
+      )
+    }
+
     return (
       <div className="App">
         <h1>Hi allala</h1>
-        <button style={btnStyle} onClick={() => this.switchNameHandler('Aleksander')}>Switch name</button>
-        <Person 
-        name={this.state.persons[0].name} 
-        age={this.state.persons[0].age} />
-        <Person 
-        name={this.state.persons[1].name} 
-        age="33"
-        click={this.switchNameHandler.bind(this, 'Antony')}
-        changed={this.nameChangedHandler}>Hobby: Race</Person>
-        <Person
-         name="Xam" 
-         age={this.state.persons[2].age} />
+        <button style={btnStyle} onClick={this.togglePersonsHandler}>Switch name</button>
+        {/* Kod do renderowania przeniesiony do zmiennej persons */}
+        {persons} 
       </div>
     );
   }
