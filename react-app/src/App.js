@@ -45,7 +45,7 @@ class App extends Component {
 
   render() {
     const btnStyle = {
-      backgroundColor: 'white',
+      backgroundColor: 'green',
       font: 'inherit',
       border: '1px solid blue',
       padding: '8px',
@@ -68,11 +68,21 @@ class App extends Component {
           })}
       </div> 
       )
+      btnStyle.backgroundColor = 'red';
+    }
+
+    let classes = [];
+    if(this.state.persons.length <= 2){
+      classes.push('red');
+    }
+    if(this.state.persons.length <= 1){
+      classes.push('bold')
     }
 
     return (
       <div className="App">
         <h1>Hi allala</h1>
+        <p className={classes.join(' ')}>List below.</p>
         <button style={btnStyle} onClick={this.togglePersonsHandler}>Switch name</button>
         {/* Kod do renderowania przeniesiony do zmiennej persons */}
         {persons} 
