@@ -1,25 +1,31 @@
 import React, { Component } from 'react';
 import './App.css';
 // import Radium, { StyleRoot }  from 'radium';
-import styled from 'styled-components';
-import Person from './Person/Person';
+// import styled from 'styled-components';
+import classes from './App.css';
+import Persons from '../components/Persons/Persons';
+import Cockpit from '../components/Cockpit/Cockpit';
 
-const StyledButton = styled.button`
-  background-color: ${props => props.altStyle ? 'red' : 'green'};
-  color: white;
-  font: inherit;
-  border: 1px solid blue;
-  padding: 8px;
-  cursor: pointer;
-  border-radius: 3px;
+// const StyledButton = styled.button`
+//   background-color: ${props => props.altStyle ? 'red' : 'green'};
+//   color: white;
+//   font: inherit;
+//   border: 1px solid blue;
+//   padding: 8px;
+//   cursor: pointer;
+//   border-radius: 3px;
 
-  &:hover {
-    background-color: ${props => props.altStyle ? 'yellow' : 'lightgreen'};
-    color: black;
-  }
-`
+//   &:hover {
+//     background-color: ${props => props.altStyle ? 'yellow' : 'lightgreen'};
+//     color: black;
+//   }
+// `
 
 class App extends Component {
+  constructor(props) {
+    super(props);
+
+  }
   state = {
     persons: [
       { id:"abc", name: 'Max', age: 28 },
@@ -27,6 +33,15 @@ class App extends Component {
       { id:"cde", name: 'Stephanie', age: 26 },
     ],
     showPersons: false
+  }
+
+  static getDerivedStateFromProps(props, state) {
+    console.log("Get derived state from props ", props);
+    return state;
+  }
+
+  componentDidMount() {
+    console.log('Component did mount');
   }
 
   deletePersonHandler = (personIndex) => {
@@ -75,42 +90,23 @@ class App extends Component {
     // }
     // Warunkowe ustawianie zawrtości zmiennej persons do wyświetlania
     let persons = null;
+ 
     if(this.state.showPersons) {
-      persons = (
-        <div>
-          {this.state.persons.map(x => {
-            return <Person
-            key={x.id}
-            click={() => this.deletePersonHandler(x.id)}
-            name={x.name} 
-            age={x.age}
-            changed={(event)=> this.nameChangedHandler(event, x.id)}
-            />
-          })}
-      </div> 
-      )
-      // customStyle.backgroundColor = 'red';
-      // customStyle[':hover'] = {
-      //   backgroundColor: 'yellow',
-      //   color: 'black'
-      // }
-    }
-
-    let classes = [];
-    if(this.state.persons.length <= 2){
-      classes.push('red');
-    }
-    if(this.state.persons.length <= 1){
-      classes.push('bold')
+      persons = <Persons persons={this.state.persons}
+          clicked={this.deletePersonHandler}
+          changed={this.nameChangedHandler}/>;
+  
+  
     }
 
     return (
       // <StyleRoot> - for Radium
-      <div className="App">
-        <h1>Hi allala</h1>
-        <p className={classes.join(' ')}>List below.</p>
-        {/* <button style={customStyle} onClick={this.togglePersonsHandler}>Switch name</button> zamieniony na styled component  */}
-        <StyledButton altStyle={this.state.showPersons} onClick={this.togglePersonsHandler}>Switch name</StyledButton>
+      <div className={classes.App}>
+        <Cockpit
+          title={this.props.appTitle}
+          showPersons={this.state.showPersons}
+          persons={this.state.persons}
+          clicked={this.togglePersonsHandler}/>
         {/* Kod do renderowania przeniesiony do zmiennej persons */}
         {persons} 
       </div>
