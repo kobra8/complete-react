@@ -1,7 +1,23 @@
 import React, { Component } from 'react';
 import './App.css';
-import Radium from 'radium';
+// import Radium, { StyleRoot }  from 'radium';
+import styled from 'styled-components';
 import Person from './Person/Person';
+
+const StyledButton = styled.button`
+  background-color: ${props => props.altStyle ? 'red' : 'green'};
+  color: white;
+  font: inherit;
+  border: 1px solid blue;
+  padding: 8px;
+  cursor: pointer;
+  border-radius: 3px;
+
+  &:hover {
+    background-color: ${props => props.altStyle ? 'yellow' : 'lightgreen'};
+    color: black;
+  }
+`
 
 class App extends Component {
   state = {
@@ -45,18 +61,18 @@ class App extends Component {
   }
 
   render() {
-    const btnStyle = {
-      backgroundColor: 'green',
-      font: 'inherit',
-      border: '1px solid blue',
-      padding: '8px',
-      cursor: 'pointer',
-      borderRadius: '3px',
-      ':hover': {
-        backgroundColor: 'lightgreen',
-        color: 'black'
-      }
-    }
+    // const customStyle = {
+    //   backgroundColor: 'green',
+    //   font: 'inherit',
+    //   border: '1px solid blue',
+    //   padding: '8px',
+    //   cursor: 'pointer',
+    //   borderRadius: '3px',
+    //   ':hover': {
+    //     backgroundColor: 'lightgreen',
+    //     color: 'black'
+    //   }
+    // }
     // Warunkowe ustawianie zawrtości zmiennej persons do wyświetlania
     let persons = null;
     if(this.state.showPersons) {
@@ -73,11 +89,11 @@ class App extends Component {
           })}
       </div> 
       )
-      btnStyle.backgroundColor = 'red';
-      btnStyle[':hover'] = {
-        backgroundColor: 'yellow',
-        color: 'black'
-      }
+      // customStyle.backgroundColor = 'red';
+      // customStyle[':hover'] = {
+      //   backgroundColor: 'yellow',
+      //   color: 'black'
+      // }
     }
 
     let classes = [];
@@ -89,15 +105,18 @@ class App extends Component {
     }
 
     return (
+      // <StyleRoot> - for Radium
       <div className="App">
         <h1>Hi allala</h1>
         <p className={classes.join(' ')}>List below.</p>
-        <button style={btnStyle} onClick={this.togglePersonsHandler}>Switch name</button>
+        {/* <button style={customStyle} onClick={this.togglePersonsHandler}>Switch name</button> zamieniony na styled component  */}
+        <StyledButton altStyle={this.state.showPersons} onClick={this.togglePersonsHandler}>Switch name</StyledButton>
         {/* Kod do renderowania przeniesiony do zmiennej persons */}
         {persons} 
       </div>
+      // </StyleRoot>
     );
   }
 }
 
-export default Radium(App);
+export default App;
