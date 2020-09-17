@@ -1,10 +1,12 @@
-import React, { Component } from 'react';
+import React, { Component, Fragment } from 'react';
 import './App.css';
 // import Radium, { StyleRoot }  from 'radium';
 // import styled from 'styled-components';
 import classes from './App.css';
 import Persons from '../components/Persons/Persons';
 import Cockpit from '../components/Cockpit/Cockpit';
+import withClass from '../hoc/withClass';
+import AuthContext from '../context/auth-context';
 
 // const StyledButton = styled.button`
 //   background-color: ${props => props.altStyle ? 'red' : 'green'};
@@ -32,7 +34,10 @@ class App extends Component {
       { id:"bcd", name: 'Manu', age: 29 },
       { id:"cde", name: 'Stephanie', age: 26 },
     ],
-    showPersons: false
+    showPersons: false,
+    cockpitVisible: true,
+    changeCounter: 0,
+    authenticated: false
   }
 
   static getDerivedStateFromProps(props, state) {
@@ -41,7 +46,7 @@ class App extends Component {
   }
 
   componentDidMount() {
-    console.log('Component did mount');
+    console.log('[App.js] Component did mount');
   }
 
   deletePersonHandler = (personIndex) => {
@@ -60,11 +65,15 @@ class App extends Component {
       ...this.state.persons[personIndex]
     }
     person.name = event.target.value;
+    // Deep copy aby dostać obiekt z nową referencją - działa na hook shouldComponentUpdate w Persons.js
     const persons = [...this.state.persons];
     persons[personIndex] = person
 
-    this.setState({
-      persons
+    this.setState((prevState, props) => {
+      return {
+        persons,
+        changeCounter: prevState.changeCounter + 1
+      }
     })
   }
 
@@ -73,6 +82,10 @@ class App extends Component {
     this.setState({
       showPersons: !doesShow
     }) 
+  }
+
+  loginHandler = () => {
+    this.setState({authenticated: true})
   }
 
   render() {
@@ -94,25 +107,33 @@ class App extends Component {
     if(this.state.showPersons) {
       persons = <Persons persons={this.state.persons}
           clicked={this.deletePersonHandler}
-          changed={this.nameChangedHandler}/>;
-  
-  
+          changed={this.nameChangedHandler}
+          isAuthenticated={this.state.authenticated}
+          />; 
     }
 
     return (
       // <StyleRoot> - for Radium
-      <div className={classes.App}>
-        <Cockpit
+      <Fragment>
+      <button onClick={() => this.setState({cockpitVisible: false})}>Hide cockpit</button>
+      <AuthContext.Provider value={
+        { authenticated: this.state.authenticated,
+          login: this.loginHandler}
+          }>
+      { this.state.cockpitVisible ? (
+        < Cockpit
           title={this.props.appTitle}
           showPersons={this.state.showPersons}
-          persons={this.state.persons}
-          clicked={this.togglePersonsHandler}/>
+          personsLength={this.state.persons.length}
+          clicked={this.togglePersonsHandler}/> 
+          ) : null };
         {/* Kod do renderowania przeniesiony do zmiennej persons */}
         {persons} 
-      </div>
-      // </StyleRoot>
-    );
+        </AuthContext.Provider>
+      </Fragment>
+    // </StyleRoot>
+    )
   }
 }
 
-export default App;
+export default withClass(App, classes.App);
